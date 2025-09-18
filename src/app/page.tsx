@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Navbar from "./component/navbar";
 import { skillsData } from "./skillsData";
 import { experienceData } from "./experienceData";
+import Image from "next/image";
 
 export default function Home() {
   // Change to mounted for clarity
@@ -40,6 +41,19 @@ export default function Home() {
             microservices using Java, Spring Boot, AWS, and ReactJS. Skilled in developing secure
             REST/GraphQL APIs, optimizing cloud deployments, and implementing CI/CD pipelines.
           </p>
+          <Image
+            src="/program.jpg" // Path relative to public folder
+            alt="Programmer Illustration"
+            width={400} // Larger width for high clarity
+            height={300} // Proportional height
+            className="mt-8 mx-auto object-contain" // Center and maintain aspect ratio
+            style={{
+              border: "8px solid", // Base border width
+              borderImage: "linear-gradient(to right, #3b4252, transparent) 1", // Faded border matching bg
+              borderRadius: "8px", // Slight rounding
+            }}
+            quality={100} // Max quality for clarity
+          />
         </div>
       </section>
 
