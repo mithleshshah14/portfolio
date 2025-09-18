@@ -1,7 +1,6 @@
 "use client";
 import Navbar from '../component/navbar';
-import ChromaGrid from '@/components/ChromaGrid';
-import Aurora from '@/components/Aurora';
+import Plasma from '../../components/Plasma';
 
 const skillsData = {
   Languages: ['Java (8, 11, 21)', 'Python', 'NodeJS', 'JavaScript'],
@@ -17,18 +16,31 @@ export default function SkillsPage() {
   return (
     <div>
       <Navbar />
-      <div className="min-h-screen p-6 relative">
-        <div style={{ width: '100%', height: '600px', position: 'absolute', top: 0, left: 0, zIndex: 0 }}>
-          <Aurora
-            colorStops={["#91e8a4", "#c290f7", "#a75bf7"]}
-            blend={0.5}
-            amplitude={1.0}
-            speed={0.5}
+      <div className="min-h-screen" style={{ backgroundColor: '#06000f', position: 'relative' }}>
+        <div style={{ width: '100%', height: '100vh', position: 'absolute', top: 0, left: 0, zIndex: 0 }}>
+          <Plasma
+            color="#ff6b35"
+            speed={0.6}
+            direction="forward"
+            scale={1.1}
+            opacity={0.8}
+            mouseInteractive={true}
           />
         </div>
-        <div className="relative z-10">
-          <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">Skills</h1>
-          <ChromaGrid data={skillsData} />
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 text-white">
+          <section className="w-full max-w-4xl mb-12">
+            <h2 className="text-3xl font-semibold mb-6 text-gray-100 text-center">Skills</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Object.entries(skillsData).map(([category, items]) =>
+                items.map((skill, index) => (
+                  <div key={`${category}-${index}`} className="bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition">
+                    <h3 className="text-sm font-medium text-gray-400 mb-1">{category}</h3>
+                    <p className="text-white">{skill}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
         </div>
       </div>
     </div>
