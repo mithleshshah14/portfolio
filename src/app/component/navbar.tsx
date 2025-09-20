@@ -1,102 +1,79 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Download } from 'lucide-react';
 
 export default function Navbar() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState('home');
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-    setActiveSection("home");
-
-    let timeout: NodeJS.Timeout;
-
-    // Check URL hash on load
-    if (window.location.hash) {
-      const id = window.location.hash.replace("#", "");
-      if (["home", "skills", "projects", "contact"].includes(id)) {
-        setActiveSection(id);
-        const section = document.getElementById(id);
-        if (section) {
-          // Assign the timeout to the variable
-          timeout = setTimeout(() => section.scrollIntoView({ behavior: "smooth" }), 0);
-        }
-      }
-    }
-
     const handleScroll = () => {
-      const sections = ["home", "skills", "projects", "contact"];
-      let current = "";
+      setIsScrolled(window.scrollY > 50);
 
-      // Check if we're at the bottom of the page
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const bottomThreshold = 100;
-
-      if (documentHeight - (scrollPosition + windowHeight) < bottomThreshold) {
-        current = "contact";
-      } else {
-        // Find the section that takes up most of the viewport
-        let maxVisibleHeight = 0;
-
-        for (const id of sections) {
-          const section = document.getElementById(id);
-          if (section) {
-            const rect = section.getBoundingClientRect();
-            const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
-            
-            if (visibleHeight > maxVisibleHeight) {
-              maxVisibleHeight = visibleHeight;
-              current = id;
-            }
-          }
+      const sections = ['home', 'about', 'skills', 'experience', 'contact'];
+      const current = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 100 && rect.bottom >= 100;
         }
-      }
+        return false;
+      });
 
-      if (current) {
-        setActiveSection(current);
-      }
+      if (current) setActiveSection(current);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial check
-    
-    return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-      window.removeEventListener("scroll", handleScroll);
-    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    if (!isMounted) return;
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
+  const scrollToSection = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <nav role="navigation" className="bg-gray-800 p-4 fixed w-full z-50 shadow-md">
-      <ul className="flex space-x-4 sm:space-x-6 text-white justify-center">
-        {["home", "skills", "projects", "contact"].map((section) => (
-          <li key={section}>
-            <button
-              onClick={() => scrollToSection(section)}
-              aria-label={`Scroll to ${section.charAt(0).toUpperCase() + section.slice(1)} section`}
-              className={`hover:text-blue-400 transition-colors relative px-2 py-1 ${
-                isMounted && activeSection === section 
-                  ? "text-blue-400 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-blue-400 border-b border-blue-400"
-                  : ""
-              }`}
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-gray-900/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      }`}>
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center py-4">
+          <div className="text-2xl font-bold text-white">
+            MS<span className="text-blue-400">.</span>
+          </div>
+
+          <div className="hidden md:flex space-x-8">
+            {[
+              { id: 'home', label: 'Home' },
+              { id: 'about', label: 'About' },
+              { id: 'skills', label: 'Skills' },
+              { id: 'experience', label: 'Experience' },
+              { id: 'contact', label: 'Contact' }
+            ].map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className={`relative transition-colors duration-300 ${activeSection === id ? 'text-blue-400' : 'text-gray-300 hover:text-white'
+                  }`}
+              >
+                {label}
+                {activeSection === id && (
+                  <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-400 rounded-full"></div>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2">
+            <a
+              href="/MITHLESH_SHAH_RESUME.pdf"
+              download="Mithlesh_Shah_Resume.pdf"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2"
             >
-              {section.charAt(0).toUpperCase() + section.slice(1)}
-            </button>
-          </li>
-        ))}
-      </ul>
+              <Download size={14} />
+              Resume
+            </a>
+          </button>
+        </div>
+      </div>
     </nav>
   );
 }

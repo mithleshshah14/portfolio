@@ -1,68 +1,41 @@
-import { FaJava } from "react-icons/fa";
-import { IconType } from "react-icons";
-import {
-    SiPython,
-    SiNodedotjs,
-    SiJavascript,
-    SiSpringboot,
-    SiHibernate,
-    SiKeycloak,
-    SiReact,
-    SiHtml5,
-    SiCss3,
-    SiAmazon,
-    SiMysql,
-    SiPostgresql,
-    SiMongodb,
-    SiGit,
-    SiJenkins,
-    SiApachemaven,
-    SiGradle,
-    SiJira,
-    SiConfluence,
-    SiJunit5,
-    SiTestinglibrary,
-} from "react-icons/si";
+import { Code } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
-// Update the type definition
 type SkillItem = {
-    name: string;
-    icon: IconType; // Changed from 'typeof FaJava' to 'IconType'
+  name: string;
+  icon: LucideIcon;
+  level: number;
 };
 
 export const skillsData: Record<string, SkillItem[]> = {
-    Languages: [
-        { name: "Java (8, 11, 21)", icon: FaJava },
-        { name: "Python", icon: SiPython },
-        { name: "NodeJS", icon: SiNodedotjs },
-        { name: "JavaScript", icon: SiJavascript },
-    ],
-    Frameworks: [
-        { name: "Spring Boot", icon: SiSpringboot },
-        { name: "Hibernate", icon: SiHibernate },
-        { name: "Keycloak", icon: SiKeycloak },
-    ],
-    WebTechnologies: [
-        { name: "ReactJS", icon: SiReact },
-        { name: "HTML5", icon: SiHtml5 },
-        { name: "CSS3", icon: SiCss3 },
-    ],
-    AWSServices: [{ name: "AWS", icon: SiAmazon }],
-    Databases: [
-        { name: "MySQL", icon: SiMysql },
-        { name: "PostgreSQL", icon: SiPostgresql },
-        { name: "MongoDB", icon: SiMongodb },
-    ],
-    Tools: [
-        { name: "Git", icon: SiGit },
-        { name: "Jenkins", icon: SiJenkins },
-        { name: "Maven", icon: SiApachemaven },
-        { name: "Gradle", icon: SiGradle },
-        { name: "JIRA", icon: SiJira },
-        { name: "Confluence", icon: SiConfluence },
-    ],
-    Testing: [
-        { name: "JUnit", icon: SiJunit5 },
-        { name: "Mockito", icon: SiTestinglibrary },
-    ],
+  Languages: [
+    { name: "Java (8, 11, 21)", icon: Code, level: 95 },
+    { name: "Python", icon: Code, level: 80 },
+    { name: "NodeJS", icon: Code, level: 85 },
+    { name: "JavaScript", icon: Code, level: 90 },
+  ],
+  Frameworks: [
+    { name: "Spring Boot", icon: Code, level: 95 },
+    { name: "Hibernate", icon: Code, level: 85 },
+    { name: "Keycloak", icon: Code, level: 80 },
+  ],
+  "Web Technologies": [
+    { name: "ReactJS", icon: Code, level: 88 },
+    { name: "HTML5", icon: Code, level: 95 },
+    { name: "CSS3", icon: Code, level: 85 },
+  ],
+  "AWS Services": [
+    { name: "AWS", icon: Code, level: 85 }
+  ],
+  Databases: [
+    { name: "MySQL", icon: Code, level: 90 },
+    { name: "PostgreSQL", icon: Code, level: 85 },
+    { name: "MongoDB", icon: Code, level: 80 },
+  ],
+  Tools: [
+    { name: "Git", icon: Code, level: 95 },
+    { name: "Jenkins", icon: Code, level: 80 },
+    { name: "Maven", icon: Code, level: 85 },
+    { name: "Gradle", icon: Code, level: 80 },
+  ],
 };
