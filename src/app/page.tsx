@@ -5,7 +5,7 @@ import { skillsData } from "./skillsData";
 import { experienceData } from "./experienceData";
 import { 
   Mail, Phone, ArrowDown, Code, Rocket, Lightbulb, 
-  Github, Linkedin, Download
+  Github, Linkedin
 } from 'lucide-react';
 
 // Animated Background Component
@@ -66,13 +66,14 @@ const useScrollReveal = () => {
       { threshold: 0.1 }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, []);
@@ -99,7 +100,6 @@ export default function Home() {
     
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
-    alert('Thank you for your message! I\'ll get back to you soon.');
     setFormData({ name: '', email: '', message: '' });
     setIsSubmitting(false);
   };
@@ -214,14 +214,14 @@ const AboutSection = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <p className="text-gray-300 text-lg leading-relaxed">
-                I'm a Senior Software Engineer with 7 years of experience designing and building scalable 
+                I&apos;m a Senior Software Engineer with 7 years of experience designing and building scalable 
                 microservices using Java, Spring Boot, AWS, and ReactJS. My passion lies in creating 
                 robust, efficient solutions that drive business growth.
               </p>
               
               <p className="text-gray-300 text-lg leading-relaxed">
-                Throughout my career, I've worked with industry leaders like Nike, EPAM, and VeriFone, 
-                where I've honed my skills in cloud architecture, API design, and full-stack development.
+                Throughout my career, I&apos;ve worked with industry leaders like Nike, EPAM, and VeriFone, 
+                where I&apos;ve honed my skills in cloud architecture, API design, and full-stack development.
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -238,7 +238,7 @@ const AboutSection = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-blue-400 mb-2">10+</div>
+                <div className="text-3xl font-bold text-blue-400 mb-2">50+</div>
                 <div className="text-gray-300">Projects Delivered</div>
               </div>
               <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
@@ -397,9 +397,9 @@ const ContactSection = ({ formData, handleChange, handleSubmit, isSubmitting }: 
           <div className="grid md:grid-cols-2 gap-12">
             <div className="space-y-8">
               <div>
-                <h3 className="text-2xl font-semibold text-white mb-6">Let's Connect</h3>
+                <h3 className="text-2xl font-semibold text-white mb-6">Let&apos;s Connect</h3>
                 <p className="text-gray-300 text-lg mb-8">
-                  I'm always interested in discussing new opportunities, 
+                  I&apos;m always interested in discussing new opportunities, 
                   innovative projects, or just having a chat about technology.
                 </p>
               </div>
@@ -504,14 +504,14 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="text-gray-400 mb-4 md:mb-0">
-            © 2025 Mithlesh Shah. All rights reserved.
+            © 2024 Mithlesh Shah. All rights reserved.
           </div>
           
           <div className="flex space-x-6">
             <a href="https://www.linkedin.com/in/mithlesh-shah14" className="text-gray-400 hover:text-blue-400 transition-colors">
               <Linkedin size={20} />
             </a>
-            <a href="https://github.com/mithleshshah14" className="text-gray-400 hover:text-blue-400 transition-colors">
+            <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
               <Github size={20} />
             </a>
             <a href="mailto:mithleshshah84@gmail.com" className="text-gray-400 hover:text-blue-400 transition-colors">
