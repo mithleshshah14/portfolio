@@ -238,7 +238,7 @@ const AboutSection = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-blue-400 mb-2">50+</div>
+                <div className="text-3xl font-bold text-blue-400 mb-2">10+</div>
                 <div className="text-gray-300">Projects Delivered</div>
               </div>
               <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
