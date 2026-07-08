@@ -1,523 +1,653 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useRef, useState } from "react";
+import Image from "next/image";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Briefcase,
+  CheckCircle2,
+  ChevronDown,
+  Code2,
+  Compass,
+  Github,
+  GraduationCap,
+  Globe,
+  Linkedin,
+  Sparkles,
+} from "lucide-react";
 import Navbar from "./component/navbar";
-import { skillsData } from "./skillsData";
-import { experienceData } from "./experienceData";
-import { 
-  Mail, Phone, ArrowDown, Code, Rocket, Lightbulb, 
-  Github, Linkedin
-} from 'lucide-react';
+import {
+  projectsData,
+  storyData,
+  stackData,
+  educationData,
+  capabilitiesData,
+  type ProjectItem,
+  type StoryItem,
+} from "./projectsData";
 
-// Animated Background Component
-const AnimatedBackground = () => {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 opacity-20">
-        {[...Array(50)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 3}s`
-            }}
-          >
-            <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const easeOut = [0.22, 1, 0.36, 1] as const;
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: easeOut } },
 };
 
-// Typing Animation Hook
-const useTypingAnimation = (text: string, speed = 100) => {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, speed);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, text, speed]);
-
-  return displayText;
+const stagger: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12 } },
 };
 
-// Scroll Reveal Hook
-const useScrollReveal = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const currentRef = ref.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
-    };
-  }, []);
-
-  return [ref, isVisible] as const;
+const slideFromLeft: Variants = {
+  hidden: { opacity: 0, x: -80 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.9, ease: easeOut } },
 };
+
+const slideFromRight: Variants = {
+  hidden: { opacity: 0, x: 80 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.9, ease: easeOut } },
+};
+
+const viewport = { once: true, margin: "-80px" } as const;
+
+const GrainOverlay = () => <div className="grain-overlay" aria-hidden="true" />;
+
+// Soft radial glow used across sections
+const Glow = ({ className, color }: { className: string; color: string }) => (
+  <div
+    aria-hidden="true"
+    className={`absolute rounded-full pointer-events-none ${className}`}
+    style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }}
+  />
+);
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      setMounted(true);
-    });
-  }, []);
-
-  const handleSubmit = async () => {
-    if (!formData.name || !formData.email || !formData.message) {
-      alert('Please fill in all fields');
-      return;
-    }
-    
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setFormData({ name: '', email: '', message: '' });
-    setIsSubmitting(false);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-400"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-gray-900 min-h-screen text-white">
+    <div className="min-h-screen text-fog">
+      <GrainOverlay />
       <Navbar />
-
-      {/* Hero Section */}
-      <HeroSection />
-
-      {/* About Section */}
-      <AboutSection />
-
-      {/* Skills Section */}
-      <SkillsSection />
-
-      {/* Experience Section */}
-      <ExperienceSection />
-
-      {/* Contact Section */}
-      <ContactSection 
-        formData={formData}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
-
-      {/* Footer */}
+      <main>
+        <HeroSection />
+        <ProductsSection />
+        <StorySection />
+        <StackSection />
+        <CapabilitiesSection />
+        <ContactSection />
+      </main>
       <Footer />
     </div>
   );
 }
 
-// Hero Section Component
+const Eyebrow = ({ children, color = "text-skyline" }: { children: React.ReactNode; color?: string }) => (
+  <span className={`font-mono text-xs uppercase tracking-[0.3em] mb-4 block ${color}`}>
+    {children}
+  </span>
+);
+
 const HeroSection = () => {
-  const typedText = useTypingAnimation("Senior Software Engineer", 100);
-  
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900">
-      <AnimatedBackground />
-      
-      <div className="text-center max-w-4xl mx-auto px-4 z-10">
-        <div className="mb-8">
-          <div className="w-40 h-40 mx-auto mb-8 relative">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-purple-600 animate-pulse"></div>
-            <div className="absolute inset-2 rounded-full bg-gray-800 flex items-center justify-center">
-              <Code className="text-blue-400" size={80} />
-            </div>
-          </div>
-        </div>
+    <section className="relative overflow-hidden">
+      <Glow className="-top-40 -left-32 w-[560px] h-[480px]" color="rgba(29,78,216,0.35)" />
+      <Glow className="top-64 -right-40 w-[520px] h-[460px]" color="rgba(14,116,144,0.28)" />
 
-        <h1 className="text-6xl md:text-7xl font-bold mb-4">
-          <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
-            Mithlesh Shah
+      <div className="relative max-w-7xl mx-auto px-5 md:px-8 py-24 md:py-32 text-center md:text-left">
+        <motion.div variants={stagger} initial="hidden" animate="show">
+          <motion.div variants={fadeUp}>
+            <Eyebrow>SaaS Founder &amp; Engineer</Eyebrow>
+          </motion.div>
+
+          <motion.h1
+            variants={fadeUp}
+            className="font-display text-5xl md:text-8xl font-extrabold tracking-[-0.04em] leading-[1.02] max-w-4xl mb-8"
+          >
+            I build software products people{" "}
+            <em className="text-silver font-serif">actually</em> use.
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="text-lg md:text-xl text-mist max-w-2xl mb-10 leading-relaxed mx-auto md:mx-0"
+          >
+            Founder of HuntWise AI and VisaHunt — two live SaaS products helping
+            people land jobs worldwide. Built solo, end to end: product, code,
+            and growth.
+          </motion.p>
+
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-col md:flex-row items-center gap-5 mb-20"
+          >
+            <a
+              href="#products"
+              className="w-full md:w-auto px-8 py-4 bg-fog text-night font-bold rounded-full hover:opacity-90 transition-all duration-300 active:scale-95 shadow-lg text-center"
+            >
+              See my products
+            </a>
+            <a
+              href="#story"
+              className="font-bold text-lg inline-flex items-center gap-2 hover:translate-x-1 transition-transform"
+            >
+              Read my story <ArrowRight size={20} />
+            </a>
+          </motion.div>
+
+          <motion.div
+            variants={fadeUp}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-hairline pt-8"
+          >
+            {[
+              { value: "2", label: "products live", color: "#2DD4BF", live: true },
+              { value: "8 yrs", label: "building software", color: "#60A5FA", live: false },
+              { value: "Solo", label: "design → code → launch", color: "#A78BFA", live: false },
+            ].map(({ value, label, color, live }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center md:items-start rounded-xl border p-5 backdrop-blur-sm"
+                style={{ borderColor: `${color}30`, backgroundColor: `${color}0A` }}
+              >
+                <span className="font-display text-3xl font-bold inline-flex items-center gap-2.5">
+                  {live && (
+                    <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
+                      <span
+                        className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span
+                        className="relative inline-flex rounded-full h-2.5 w-2.5"
+                        style={{ backgroundColor: color }}
+                      />
+                    </span>
+                  )}
+                  {value}
+                </span>
+                <span
+                  className="font-mono text-xs uppercase tracking-[0.15em] mt-1.5"
+                  style={{ color }}
+                >
+                  {label}
+                </span>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// Product mockup with a subtle mouse-tracking 3D tilt
+const TiltMockup = ({ project }: { project: ProjectItem }) => {
+  const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0.5);
+  const y = useMotionValue(0.5);
+  const rotateX = useSpring(useTransform(y, [0, 1], [4, -4]), { stiffness: 150, damping: 20 });
+  const rotateY = useSpring(useTransform(x, [0, 1], [-4, 4]), { stiffness: 150, damping: 20 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (reduceMotion || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width);
+    y.set((e.clientY - rect.top) / rect.height);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0.5);
+    y.set(0.5);
+  };
+
+  return (
+    <div className="relative">
+      <div
+        aria-hidden="true"
+        className="absolute -inset-6 rounded-[28px] pointer-events-none opacity-40"
+        style={{ background: `radial-gradient(ellipse, ${project.accent}33, transparent 70%)` }}
+      />
+      <motion.div
+        ref={ref}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={reduceMotion ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
+        className="relative rounded-[20px] overflow-hidden shadow-2xl bg-panel will-change-transform"
+      >
+        <div
+          className="absolute inset-0 rounded-[20px] pointer-events-none border z-10"
+          style={{ borderColor: `${project.accent}40` }}
+        />
+        <Image
+          src={project.image}
+          alt={project.imageAlt}
+          width={project.imageWidth}
+          height={project.imageHeight}
+          className="w-full h-auto"
+          priority={project.name === "HuntWise AI"}
+        />
+      </motion.div>
+    </div>
+  );
+};
+
+const ProductsSection = () => {
+  return (
+    <section id="products" className="relative py-28 md:py-40 border-y border-hairline overflow-hidden">
+      <Glow className="top-1/3 -left-48 w-[500px] h-[500px]" color="rgba(13,148,136,0.15)" />
+      <Glow className="bottom-0 -right-48 w-[500px] h-[500px]" color="rgba(29,78,216,0.15)" />
+
+      <div className="relative max-w-7xl mx-auto px-5 md:px-8">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="mb-20"
+        >
+          <Eyebrow color="text-huntwise">What I&apos;ve built</Eyebrow>
+          <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
+            Two products. Both live.
+          </h2>
+        </motion.div>
+
+        <div className="space-y-28 md:space-y-40">
+          {projectsData.map((project, index) => (
+            <ProductShowcase key={project.name} project={project} flipped={index % 2 === 1} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ProductShowcase = ({ project, flipped }: { project: ProjectItem; flipped: boolean }) => {
+  const Icon = project.name === "HuntWise AI" ? Briefcase : Globe;
+
+  return (
+    <motion.div
+      variants={stagger}
+      initial="hidden"
+      whileInView="show"
+      viewport={viewport}
+      className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center"
+    >
+      <motion.div
+        variants={flipped ? slideFromRight : slideFromLeft}
+        className={`md:col-span-5 order-2 ${flipped ? "md:order-2" : "md:order-1"}`}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <span
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-white"
+            style={{ backgroundColor: project.accentDeep }}
+          >
+            <Icon size={24} />
           </span>
-        </h1>
-        
-        <div className="text-2xl md:text-3xl text-gray-300 mb-8 h-12">
-          {typedText}
-          <span className="animate-pulse">|</span>
+          <h3 className="font-display text-2xl md:text-3xl font-bold">{project.name}</h3>
         </div>
 
-        <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-          Passionate about building scalable microservices and cloud solutions. 
-          7 years of experience turning complex problems into elegant code.
+        <p className="text-lg font-bold mb-4" style={{ color: project.accent }}>
+          {project.tagline}
         </p>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <a href="mailto:mithleshshah84@gmail.com" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105">
-            <Mail size={16} />
-            Get In Touch
-          </a>
-          <a href="https://www.linkedin.com/in/mithlesh-shah14" className="flex items-center gap-2 border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white px-6 py-3 rounded-lg transition-all duration-300">
-            <Linkedin size={16} />
-            LinkedIn
-          </a>
+        <p className="text-mist mb-6 leading-relaxed">{project.description}</p>
+
+        <ul className="space-y-3 mb-6">
+          {project.features.map((feature) => (
+            <li key={feature} className="flex items-center gap-2">
+              <CheckCircle2 size={20} style={{ color: project.accent }} className="shrink-0" />
+              {feature}
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex flex-wrap gap-2 mb-8">
+          {project.tech.map((tech) => (
+            <span
+              key={tech}
+              className="px-3 py-1 bg-panel border border-hairline rounded-full font-mono text-xs text-mist"
+            >
+              {tech}
+            </span>
+          ))}
         </div>
 
-        <div className="animate-bounce">
-          <ArrowDown className="text-blue-400 mx-auto" size={24} />
-        </div>
-      </div>
-    </section>
+        <a
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 font-bold hover:underline underline-offset-4 decoration-2"
+          style={{ textDecorationColor: project.accent }}
+        >
+          Visit {project.domain} <ArrowUpRight size={20} />
+        </a>
+      </motion.div>
+
+      <motion.div
+        variants={flipped ? slideFromLeft : slideFromRight}
+        className={`md:col-span-7 order-1 ${flipped ? "md:order-1" : "md:order-2"}`}
+      >
+        <TiltMockup project={project} />
+      </motion.div>
+    </motion.div>
   );
 };
 
-// About Section Component
-const AboutSection = () => {
-  const [ref, isVisible] = useScrollReveal();
-
+const StorySection = () => {
   return (
-    <section id="about" className="py-24 bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4">
-        <div ref={ref} className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="text-4xl font-bold text-center text-white mb-16">
-            About <span className="text-blue-400">Me</span>
+    <section id="story" className="max-w-7xl mx-auto px-5 md:px-8 py-28 md:py-40">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="md:col-span-5"
+        >
+          <Eyebrow>The story</Eyebrow>
+          <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-8">
+            Engineer by training, founder by choice.
           </h2>
-          
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <p className="text-gray-300 text-lg leading-relaxed">
-                I&apos;m a Senior Software Engineer with 7 years of experience designing and building scalable 
-                microservices using Java, Spring Boot, AWS, and ReactJS. My passion lies in creating 
-                robust, efficient solutions that drive business growth.
-              </p>
-              
-              <p className="text-gray-300 text-lg leading-relaxed">
-                Throughout my career, I&apos;ve worked with industry leaders like Nike, EPAM, and VeriFone, 
-                where I&apos;ve honed my skills in cloud architecture, API design, and full-stack development.
-              </p>
-
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 text-blue-400">
-                  <Rocket size={16} />
-                  <span>7+ Years Experience</span>
-                </div>
-                <div className="flex items-center gap-2 text-blue-400">
-                  <Lightbulb size={16} />
-                  <span>Innovation Focused</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-blue-400 mb-2">10+</div>
-                <div className="text-gray-300">Projects Delivered</div>
-              </div>
-              <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-blue-400 mb-2">5+</div>
-                <div className="text-gray-300">Companies</div>
-              </div>
-              <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-blue-400 mb-2">99.9%</div>
-                <div className="text-gray-300">Uptime</div>
-              </div>
-              <div className="bg-gray-800 p-6 rounded-lg text-center transform hover:scale-105 transition-transform duration-300">
-                <div className="text-3xl font-bold text-blue-400 mb-2">24/7</div>
-                <div className="text-gray-300">Available</div>
-              </div>
+          <p className="text-lg md:text-xl text-mist leading-relaxed mb-10">
+            Eight years engineering backend systems at Nike, EPAM, VeriFone and
+            DigitalZone taught me how to build software that scales. In 2025 I
+            started shipping my own products, focusing on high-impact AI tools.
+          </p>
+          <div className="flex items-start gap-3 border-t border-hairline pt-6">
+            <GraduationCap size={20} className="text-dim shrink-0 mt-0.5" />
+            <div>
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-dim block mb-1">
+                Education
+              </span>
+              <span className="text-sm text-mist">
+                {educationData.degree} — {educationData.school}, {educationData.year}
+              </span>
             </div>
           </div>
-        </div>
+        </motion.div>
+
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="md:col-span-6 md:col-start-7 space-y-5"
+        >
+          {storyData.map((item) => (
+            <StoryCard key={item.year + item.company} item={item} />
+          ))}
+        </motion.div>
       </div>
     </section>
   );
 };
 
-// Skills Section Component
-const SkillsSection = () => {
-  const [ref, isVisible] = useScrollReveal();
+const StoryCard = ({ item }: { item: StoryItem }) => {
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <section id="skills" className="py-24 bg-gray-800">
-      <div className="max-w-6xl mx-auto px-4">
-        <div ref={ref} className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="text-4xl font-bold text-center text-white mb-16">
-            Technical <span className="text-blue-400">Skills</span>
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Object.entries(skillsData).map(([category, skills], categoryIndex) => (
-              <div 
-                key={category} 
-                className="bg-gray-900 p-6 rounded-lg border border-gray-700 transform hover:scale-105 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20"
-                style={{ animationDelay: `${categoryIndex * 0.1}s` }}
-              >
-                <h3 className="text-xl font-semibold text-blue-400 mb-6">{category}</h3>
-                <div className="space-y-4">
-                  {skills.map((skill, index) => (
-                    <div key={index} className="group">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                          <skill.icon className="text-blue-400" size={20} />
-                          <span className="text-gray-200 text-sm">{skill.name}</span>
-                        </div>
-                        <span className="text-blue-400 text-sm">{skill.level}%</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div 
-                          className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-1000 ease-out"
-                          style={{ 
-                            width: isVisible ? `${skill.level}%` : '0%',
-                            transitionDelay: `${index * 0.1}s`
-                          }}
-                        ></div>
-                      </div>
-                    </div>
+    <motion.div variants={fadeUp} className="flex items-start gap-6 group">
+      <span
+        className={`font-mono text-xs shrink-0 w-20 pt-5 ${
+          item.current ? "text-huntwise font-bold" : "text-dim"
+        }`}
+      >
+        {item.year}
+      </span>
+      <div
+        className={`flex-grow rounded-xl border overflow-hidden transition-all duration-300 ${
+          item.current
+            ? "bg-gradient-to-r from-huntwise-deep/25 to-visahunt-deep/25 border-huntwise/40"
+            : "bg-panel border-hairline group-hover:border-white/25"
+        }`}
+      >
+        <button
+          onClick={() => setExpanded((open) => !open)}
+          aria-expanded={expanded}
+          className="w-full flex items-center justify-between gap-4 p-4 text-left cursor-pointer"
+        >
+          <span>
+            <span className="font-bold block">{item.company}</span>
+            <span className="text-sm text-mist">{item.role}</span>
+          </span>
+          <ChevronDown
+            size={18}
+            className={`shrink-0 text-mist transition-transform duration-300 ${
+              expanded ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        <AnimatePresence initial={false}>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.35, ease: easeOut }}
+            >
+              <div className="px-4 pb-4 pt-1 border-t border-hairline">
+                <span className="font-mono text-xs uppercase tracking-wider block mt-3 mb-2 text-huntwise">
+                  {item.project}
+                </span>
+                <p className="text-sm mb-4 leading-relaxed text-mist">{item.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {item.tech.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 rounded-full font-mono text-xs border border-white/15 text-mist"
+                    >
+                      {tech}
+                    </span>
                   ))}
                 </div>
+                <ul className="space-y-1.5">
+                  {item.achievements.map((achievement) => (
+                    <li key={achievement} className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 size={15} className="shrink-0 text-huntwise" />
+                      {achievement}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ))}
-          </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
+
+const StackSection = () => {
+  return (
+    <section id="stack" className="border-y border-hairline bg-panel/40">
+      <div className="max-w-7xl mx-auto px-5 md:px-8 py-28 md:py-36">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="mb-16"
+        >
+          <Eyebrow>The stack</Eyebrow>
+          <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
+            Tools of the trade.
+          </h2>
+        </motion.div>
+
+        <div>
+          {stackData.map((group, index) => (
+            <motion.div
+              key={group.label}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.04, ease: easeOut }}
+              className="border-t border-hairline py-5 md:py-6 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-8"
+            >
+              <div className="md:col-span-4 flex items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className="w-2.5 h-2.5 rounded-sm shrink-0"
+                  style={{ backgroundColor: group.color }}
+                />
+                <span className="font-mono text-xs uppercase tracking-[0.2em] text-mist">
+                  {group.label}
+                </span>
+              </div>
+              <div className="md:col-span-8 flex flex-wrap gap-2">
+                {group.items.map((item) => (
+                  <span
+                    key={item}
+                    className="px-3 py-1.5 rounded-full text-sm text-fog/90 border transition-colors duration-300"
+                    style={{
+                      borderColor: `${group.color}38`,
+                      backgroundColor: `${group.color}0F`,
+                    }}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+          <div className="border-t border-hairline" />
         </div>
       </div>
     </section>
   );
 };
 
-// Experience Section Component
-const ExperienceSection = () => {
-  const [ref, isVisible] = useScrollReveal();
+const CapabilitiesSection = () => {
+  const icons = [Compass, Code2, Sparkles];
 
   return (
-    <section id="experience" className="py-24 bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4">
-        <div ref={ref} className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="text-4xl font-bold text-center text-white mb-16">
-            Professional <span className="text-blue-400">Experience</span>
+    <section className="py-28 md:py-40">
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="mb-20"
+        >
+          <Eyebrow color="text-huntwise">How I work</Eyebrow>
+          <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
+            Full-stack independence.
           </h2>
-          
-          <div className="space-y-8">
-            {experienceData.map((exp, index) => (
-              <div 
-                key={index} 
-                className="group relative bg-gray-800 p-8 rounded-lg border border-gray-700 hover:border-blue-500 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10"
-                style={{ animationDelay: `${index * 0.2}s` }}
+        </motion.div>
+
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          {capabilitiesData.map((capability, index) => {
+            const Icon = icons[index];
+            return (
+              <motion.div
+                key={capability.title}
+                variants={fadeUp}
+                className="bg-panel border border-hairline p-10 rounded-[20px] hover:border-white/25 transition-colors"
               >
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-purple-600 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="md:col-span-2">
-                    <h3 className="text-2xl font-semibold text-blue-400 mb-2">
-                      {exp.role}
-                    </h3>
-                    <h4 className="text-lg font-medium text-white mb-2">{exp.company}</h4>
-                    <p className="text-gray-400 mb-4">{exp.period}</p>
-                    
-                    <h5 className="text-lg font-medium text-gray-200 mb-3">{exp.project}</h5>
-                    <p className="text-gray-300 mb-4 leading-relaxed">{exp.description}</p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {exp.tech.map((tech, techIndex) => (
-                        <span 
-                          key={techIndex}
-                          className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-sm border border-blue-600/30"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <h6 className="text-lg font-semibold text-gray-200 mb-3">Key Achievements</h6>
-                    {exp.achievements.map((achievement, achIndex) => (
-                      <div key={achIndex} className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full flex-shrink-0"></div>
-                        <span className="text-gray-300 text-sm">{achievement}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+                <Icon size={36} className="text-huntwise mb-8" />
+                <h3 className="font-display text-2xl font-bold mb-4">{capability.title}</h3>
+                <p className="text-mist leading-relaxed">{capability.description}</p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );
 };
 
-// Contact Section Component
-interface ContactSectionProps {
-  formData: { name: string; email: string; message: string };
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleSubmit: () => void;
-  isSubmitting: boolean;
-}
-
-const ContactSection = ({ formData, handleChange, handleSubmit, isSubmitting }: ContactSectionProps) => {
-  const [ref, isVisible] = useScrollReveal();
-
+const ContactSection = () => {
   return (
-    <section id="contact" className="py-24 bg-gray-800">
-      <div className="max-w-6xl mx-auto px-4">
-        <div ref={ref} className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="text-4xl font-bold text-center text-white mb-16">
-            Get In <span className="text-blue-400">Touch</span>
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-6">Let&apos;s Connect</h3>
-                <p className="text-gray-300 text-lg mb-8">
-                  I&apos;m always interested in discussing new opportunities, 
-                  innovative projects, or just having a chat about technology.
-                </p>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <Mail className="text-white" size={20} />
-                  </div>
-                  <div>
-                    <div className="text-white font-medium">Email</div>
-                    <div className="text-gray-400">mithleshshah84@gmail.com</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <Phone className="text-white" size={20} />
-                  </div>
-                  <div>
-                    <div className="text-white font-medium">Phone</div>
-                    <div className="text-gray-400">+91 7999673489</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <Linkedin className="text-white" size={20} />
-                  </div>
-                  <div>
-                    <div className="text-white font-medium">LinkedIn</div>
-                    <a href="https://www.linkedin.com/in/mithlesh-shah14" className="text-blue-400 hover:text-blue-300 transition-colors">
-                      mithlesh-shah14
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-gray-900 p-8 rounded-lg border border-gray-700">
-              <div className="space-y-6">
-                <div>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Your Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all duration-300"
-                  />
-                </div>
-                
-                <div>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Your Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all duration-300"
-                  />
-                </div>
-                
-                <div>
-                  <textarea
-                    name="message"
-                    rows={5}
-                    placeholder="Your Message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all duration-300 resize-none"
-                  />
-                </div>
-                
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      Sending...
-                    </>
-                  ) : (
-                    'Send Message'
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section id="contact" className="relative overflow-hidden">
+      <Glow className="-bottom-40 -left-32 w-[480px] h-[420px]" color="rgba(14,116,144,0.25)" />
+      <Glow className="-top-24 -right-32 w-[440px] h-[400px]" color="rgba(29,78,216,0.22)" />
+
+      <div className="relative max-w-7xl mx-auto px-5 md:px-8 py-28 md:py-40 text-center">
+        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={viewport}>
+          <motion.div variants={fadeUp}>
+            <Eyebrow color="text-huntwise">Building something? Let&apos;s talk</Eyebrow>
+          </motion.div>
+
+          <motion.a
+            variants={fadeUp}
+            href="mailto:mithleshshah84@gmail.com"
+            className="font-display text-3xl md:text-6xl font-extrabold tracking-tight hover:text-huntwise transition-colors break-words block"
+          >
+            mithleshshah84@gmail.com
+          </motion.a>
+
+          <motion.div variants={fadeUp} className="flex justify-center gap-8 mt-10">
+            <a
+              href="https://www.linkedin.com/in/mithlesh-shah14"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-mist hover:text-fog transition-colors"
+            >
+              <Linkedin size={16} /> LinkedIn
+            </a>
+            <a
+              href="https://github.com/mithleshshah14"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-mist hover:text-fog transition-colors"
+            >
+              <Github size={16} /> GitHub
+            </a>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
-// Footer Component
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 border-t border-gray-800 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="text-gray-400 mb-4 md:mb-0">
-            © 2025 Mithlesh Shah. All rights reserved.
+    <footer className="w-full border-t border-hairline">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-7xl mx-auto px-5 md:px-8 py-8">
+        <span className="font-mono text-xs uppercase tracking-[0.3em] font-bold">
+          Mithlesh Shah
+        </span>
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="flex gap-4">
+            <a
+              href="https://www.huntwiseai.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs uppercase text-mist hover:text-huntwise transition-colors"
+            >
+              HuntWise AI
+            </a>
+            <a
+              href="https://www.visa-hunt.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs uppercase text-mist hover:text-visahunt transition-colors"
+            >
+              VisaHunt
+            </a>
+            <a
+              href="/MITHLESH_SHAH_RESUME.pdf"
+              download="Mithlesh_Shah_Resume.pdf"
+              className="font-mono text-xs uppercase text-mist hover:text-fog transition-colors"
+            >
+              Resume ↓
+            </a>
           </div>
-          
-          <div className="flex space-x-6">
-            <a href="https://www.linkedin.com/in/mithlesh-shah14" className="text-gray-400 hover:text-blue-400 transition-colors">
-              <Linkedin size={20} />
-            </a>
-            <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
-              <Github size={20} />
-            </a>
-            <a href="mailto:mithleshshah84@gmail.com" className="text-gray-400 hover:text-blue-400 transition-colors">
-              <Mail size={20} />
-            </a>
-          </div>
+          <span className="font-mono text-xs uppercase text-dim">© 2026 Mithlesh Shah</span>
         </div>
       </div>
     </footer>
