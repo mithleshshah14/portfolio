@@ -1,79 +1,120 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Download } from 'lucide-react';
+import { motion, useScroll, useSpring } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
-export default function Navbar() {
-  const [activeSection, setActiveSection] = useState('home');
-  const [isScrolled, setIsScrolled] = useState(false);
+const links = [
+  { id: "products", label: "Products" },
+  { id: "story", label: "Story" },
+  { id: "stack", label: "Stack" },
+];
+
+const sectionIds = ["products", "story", "stack", "contact"];
+
+function useActiveSection() {
+  const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    const observers: IntersectionObserver[] = [];
 
-      const sections = ['home', 'about', 'skills', 'experience', 'contact'];
-      const current = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
-        }
-        return false;
-      });
+    sectionIds.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (!element) return;
 
-      if (current) setActiveSection(current);
-    };
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) setActiveSection(sectionId);
+          });
+        },
+        { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
+      );
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+      observer.observe(element);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((observer) => observer.disconnect());
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-  };
+  return activeSection;
+}
+
+export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const activeSection = useActiveSection();
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
+
+  const linkClass = (id: string) =>
+    `relative py-1 transition-colors ${
+      activeSection === id
+        ? "text-fog after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-huntwise"
+        : "text-mist hover:text-fog"
+    }`;
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-gray-900/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}>
-      <div className="max-w-7xl mx-auto px-4">
+    <nav className="sticky top-0 z-50 w-full bg-night/80 backdrop-blur-md border-b border-hairline">
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
         <div className="flex justify-between items-center py-4">
-          <div className="text-2xl font-bold text-white">
-            MS<span className="text-blue-400">.</span>
-          </div>
+          <a
+            href="#"
+            className="font-mono text-sm font-bold uppercase tracking-[0.3em] text-fog"
+          >
+            Mithlesh&nbsp;Shah
+          </a>
 
-          <div className="hidden md:flex space-x-8">
-            {[
-              { id: 'home', label: 'Home' },
-              { id: 'about', label: 'About' },
-              { id: 'skills', label: 'Skills' },
-              { id: 'experience', label: 'Experience' },
-              { id: 'contact', label: 'Contact' }
-            ].map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => scrollToSection(id)}
-                className={`relative transition-colors duration-300 ${activeSection === id ? 'text-blue-400' : 'text-gray-300 hover:text-white'
-                  }`}
-              >
+          <div className="hidden md:flex items-center gap-8">
+            {links.map(({ id, label }) => (
+              <a key={id} href={`#${id}`} className={linkClass(id)}>
                 {label}
-                {activeSection === id && (
-                  <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-400 rounded-full"></div>
-                )}
-              </button>
+              </a>
             ))}
+            <a
+              href="#contact"
+              className="px-6 py-2 bg-fog text-night font-bold rounded-full hover:opacity-80 transition-all duration-300 active:scale-95"
+            >
+              Work with me
+            </a>
           </div>
 
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2">
-            <a
-              href="/MITHLESH_SHAH_RESUME.pdf"
-              download="Mithlesh_Shah_Resume.pdf"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2"
-            >
-              <Download size={14} />
-              Resume
-            </a>
+          <button
+            className="md:hidden p-2 text-fog"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
+
+        {menuOpen && (
+          <div className="md:hidden flex flex-col gap-4 pb-6">
+            {links.map(({ id, label }) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                onClick={() => setMenuOpen(false)}
+                className="text-mist hover:text-fog transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+            <a
+              href="#contact"
+              onClick={() => setMenuOpen(false)}
+              className="px-6 py-2 bg-fog text-night font-bold rounded-full text-center"
+            >
+              Work with me
+            </a>
+          </div>
+        )}
       </div>
+
+      {/* Scroll progress bar */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-0.5 origin-left bg-gradient-to-r from-huntwise to-visahunt-deep"
+        style={{ scaleX: progress }}
+      />
     </nav>
   );
 }
