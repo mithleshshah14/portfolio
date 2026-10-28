@@ -30,7 +30,7 @@ export function Faces() {
       <section className="face gutter-r" data-title="Contents">
         <div className="page">
           <h1 className="h2">Hi, I&apos;m Mithlesh.</h1>
-          <p className="lead">I founded Phantom Grace Technologies to build four brands of my own, after eight years building backend systems.</p>
+          <p className="lead">After eight years building backend systems, I founded Phantom Grace Technologies, the company behind VisaHunt, HuntwiseAI, Ashviora and Silent Arc Studios.</p>
           <ul className="toc">
             <li><button data-goto="3">1 · The engineer</button><span>3</span></li>
             {BRANDS.map((b, i) => (
