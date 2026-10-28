@@ -1,0 +1,278 @@
+/* The book portfolio (owner-approved prototype v9, .taste-skill/mocks/book.html). The engine
+   (src/components/book/BookEngine.tsx) clones the source faces in #faces into leaves; without it (no JS, or reduced
+   motion) #faces itself shows as a column of pages. */
+
+  :root {
+    --serif:var(--font-fraunces), Georgia, serif; --sans:var(--font-inter), system-ui, sans-serif;
+    /* A diary: red-brown leather cover, cream pages, cream around it. */
+    --desk:#f1e8d6; --paper:#fbf5e6; --paper-2:#f4ead3; --ink:#1c1a17; --soft:#5a544c;
+    --cover:#6e2b1f; --gold:#ddb35c; --blue:#1f4fb4;
+    --pw:430px; --ph:600px;               /* page size, set by JS to fit the screen */
+  }
+  * { box-sizing:border-box; margin:0; }
+  html { background:var(--desk); }
+  body { font-family:var(--sans); color:var(--ink); background:var(--desk); }
+  a { color:var(--blue); }
+  .skip { position:fixed; right:20px; top:16px; z-index:50; background:var(--ink); color:#fff; padding:10px 14px; border-radius:6px; font-size:15px; font-weight:600; text-decoration:none; }
+
+  /* The scroll track: tall section, the stage inside stays pinned while the pages turn. */
+  .track { position:relative; z-index:1; }
+  .stage { position:sticky; top:0; height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; }
+  .running { height:28px; font-family:var(--serif); font-size:17px; color:var(--soft); margin-bottom:14px; transition:opacity .3s; }
+  .book { position:relative; width:calc(var(--pw) * 2); height:var(--ph); transform-style:preserve-3d; transition:none; }
+  .stage { perspective:2000px; }
+
+  /* ---- Thickness: the closed diary is a real 3D block. Page block (cream, page lines) on the fore-edge and bottom,
+     leather over the spine, a back board behind. Seen only while the book is tilted (closed). */
+  .slab { position:absolute; top:0; left:50%; width:var(--pw); height:100%; transform-style:preserve-3d; pointer-events:none; }
+  /* Fade the flat faces, never the 3D container: opacity < 1 on a preserve-3d element flattens it, and mid-fade the
+     edges were drawn flat beside the book (a visible jump on the first turn). */
+  .slab > * { position:absolute; backface-visibility:hidden; opacity:0; transition:opacity .25s; }
+  .slab.on > * { opacity:1; }
+  .slab .fore { top:5px; right:3px; width:var(--T); bottom:5px; transform-origin:right center; transform:rotateY(-90deg);
+                background:#f3ead5 repeating-linear-gradient(90deg, #d9ccb0 0 1px, transparent 1px 3px); }
+  .slab .foot { left:4px; right:3px; bottom:5px; height:var(--T); transform-origin:center bottom; transform:rotateX(90deg);
+                background:#efe5cd repeating-linear-gradient(0deg, #d9ccb0 0 1px, transparent 1px 3px); }
+  .slab .spine { top:0; left:0; width:var(--T); bottom:0; transform-origin:left center; transform:rotateY(90deg); background:#8a4521; border-radius:8px; }
+  .slab .board { inset:0; transform:translateZ(calc(-1 * var(--T))); background:#94491f; border-radius:4px 14px 14px 4px; box-shadow:0 0 0 1px #7b3a17; }
+  .slab.end { left:0; }                                   /* closed at the end: back cover on the left half */
+  .slab.end .fore { right:auto; left:3px; transform-origin:left center; transform:rotateY(90deg); }
+  .slab.end .spine { left:auto; right:0; transform-origin:right center; transform:rotateY(-90deg); }
+  .slab.end .board { border-radius:14px 4px 4px 14px; }
+  .single .slab.start { left:0; } .single .slab.end { display:none; }
+  .single .book { transition:transform .6s cubic-bezier(.3,.7,.2,1); }
+  /* Light on the leather: a soft sheen from the top left. */
+  .cover::after, .contact::after { content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+    background:linear-gradient(118deg, rgba(255,236,205,.16) 0%, rgba(255,236,205,0) 38%, rgba(40,14,2,0) 62%, rgba(40,14,2,.18) 100%); }
+  .book::after { /* the shadow the book casts on the desk: it really floats */
+    content:""; position:absolute; left:50%; right:0; bottom:-18px; height:24px; border-radius:50%;
+    background:rgba(40,30,20,.25); filter:blur(12px); z-index:-1; transition:left .2s, right .2s; }
+  .book.open::after { left:4%; right:4%; }
+  .book.ended::after { left:0; right:50%; }
+  .leaf { position:absolute; top:0; left:50%; width:var(--pw); height:100%; transform-origin:left center; transform-style:preserve-3d; }
+  .face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; overflow:hidden; background:var(--paper); }
+  .face.back { transform:rotateY(180deg); }
+  .leaf .front { border-radius:0 6px 6px 0; }
+  .leaf .back  { border-radius:6px 0 0 6px; }
+  .page { padding:38px 36px 46px; height:100%; display:flex; flex-direction:column; }
+  .pno { position:absolute; bottom:16px; font-size:13px; color:var(--soft); }
+  .front .pno { right:24px; } .back .pno { left:24px; }
+  .gutter-r { box-shadow:inset 18px 0 22px -18px rgba(60,45,30,.35); } /* spine side of a right page */
+  .gutter-l { box-shadow:inset -18px 0 22px -18px rgba(60,45,30,.35); }
+
+  /* Ribbon bookmark, gold, hangs from the top of the right page while the book is open. */
+  .ribbon { position:absolute; top:-6px; right:14px; width:14px; height:70px; background:var(--gold); z-index:200; opacity:0; transition:opacity .3s;
+            clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%); }
+  .book.open .ribbon { opacity:1; }
+
+  /* Cover and back cover */
+  /* ---- Leather wrap diary cover. The grain is a still SVG noise on the cover only (no animation, nothing blended over
+     the page), so it costs nothing while scrolling. */
+  /* Real leather (public/book/leather.jpg: "Old brown leather texture", CC0 via rawpixel), warmed towards the tan of the
+     owner's reference diary. Sizes on the cover scale with the page width (--pw), so nothing collides when it's smaller. */
+  .cover, .contact, .flap, .slab .board, .slab .spine { background:linear-gradient(rgba(214,140,74,.32), rgba(214,140,74,.32)), url(/book/leather.jpg) center / cover no-repeat #a7602f; }
+  .cover { border-radius:3px 10px 10px 3px; }
+  .leather, .contact::before { content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+    box-shadow:inset 0 0 0 1px rgba(255,214,170,.18), inset 0 0 30px rgba(70,28,8,.35); }
+  /* The flap comes from the back round the fore-edge: big rounded corners where it ends on the front, a rounded fold
+     (darker, turning away) along the right edge, and a soft shadow on the cover beneath it. --fold (0 → 1, set by JS) folds it back to the fore-edge. */
+  .flap { position:absolute; top:1.5%; bottom:1.5%; right:-1.5%; width:40.5%; border-radius:30% 12px 12px 30% / 13% 12px 12px 13%;
+          background:linear-gradient(rgba(236,170,104,.28), rgba(236,170,104,.28)), linear-gradient(rgba(214,140,74,.32), rgba(214,140,74,.32)), url(/book/leather.jpg) 30% 40% / cover no-repeat #ad6634;
+          box-shadow:-9px 4px 16px -4px rgba(45,15,3,.62), -2px 0 3px -1px rgba(45,15,3,.5), inset -18px 0 20px -10px rgba(40,14,2,.55), inset 3px 0 2px -1px rgba(255,220,180,.35); z-index:1;
+          transform-origin:right center; transform:scaleX(calc(1 - var(--fold, 0) * .9)); opacity:calc(1 - var(--fold, 0)); }
+  /* Coconut-shell button: dark brown, lighter flecks, a rim. Centred on the flap's left edge. */
+  .button { position:absolute; left:61%; top:47.14%; width:calc(var(--pw) * .13); aspect-ratio:1; border-radius:50%; z-index:4;
+            transform:translate(-50%,-50%) translateX(calc(var(--fold, 0) * var(--pw) * .34)) scale(calc(1 - var(--fold, 0) * .5)); opacity:calc(1 - var(--fold, 0));
+            background:
+              radial-gradient(circle at 30% 34%, #c9a072 0 5%, transparent 6%), radial-gradient(circle at 62% 26%, #b88e5c 0 4%, transparent 5%),
+              radial-gradient(circle at 70% 58%, #d2ab7c 0 6%, transparent 7%), radial-gradient(circle at 40% 70%, #a97f50 0 4%, transparent 5%),
+              radial-gradient(circle at 22% 56%, #b38658 0 3%, transparent 4%), radial-gradient(circle at 52% 46%, #8e6236 0 7%, transparent 8%),
+              radial-gradient(circle at 50% 50%, #5a3419, #3d2111 70%);
+            box-shadow:inset 0 0 0 2px #2c170a, inset 2px 3px 3px rgba(255,220,180,.25), 0 3px 5px rgba(30,10,2,.55); }
+  .button::before, .button::after { content:""; position:absolute; width:12%; aspect-ratio:1; border-radius:50%; background:#1e1006; top:44%; }
+  .button::before { left:30%; } .button::after { left:58%; }
+  /* Antique brass: a beaded medallion with the PG monogram and a nameplate with two rivets. */
+  /* Tooling: dark groove + light lower edge, crisp at any size. */
+  .tooling { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  /* The drawing lives in the shared <symbol>s, so it is styled there, not under .tooling. */
+  symbol .lo { stroke:rgba(48,15,3,.78); --vine:url(#vine-lo); }
+  symbol .hi { stroke:rgba(255,218,176,.42); --vine:url(#vine-hi); }
+  /* Widths in drawing units (720 wide ≈ 1.3–1.8px on screen). No non-scaling-stroke: inside a page that turns in 3D it
+     makes the browser redraw the whole tooling every frame, and phones stutter on the cover turn. */
+  #tool-border, #tool-centre, #tool-corner, #tool-fleuron, #tool-slim { stroke-width:2.6; }
+  .brass { position:absolute; left:13%; width:44%; bottom:24%; display:flex; flex-direction:column; align-items:center; gap:calc(var(--pw) * .02); }
+  .medal { width:calc(var(--pw) * .15); aspect-ratio:1; border-radius:50%; display:grid; place-items:center; font-family:var(--serif); font-weight:700; font-size:calc(var(--pw) * .05);
+           color:#3b2a10; text-shadow:0 1px 0 rgba(255,230,170,.35);
+           background:radial-gradient(circle at 36% 30%, #e2c98a, #a88a4c 55%, #6e5427);
+           box-shadow:0 0 0 calc(var(--pw) * .008) #5a4220, 0 0 0 calc(var(--pw) * .014) #b3934f, 0 0 0 calc(var(--pw) * .02) #5a4220, 0 3px 6px calc(var(--pw) * .02) rgba(30,10,2,.45); }
+  .plate { display:flex; align-items:center; gap:calc(var(--pw) * .02); padding:calc(var(--pw) * .012) calc(var(--pw) * .025); border-radius:3px;
+           background:linear-gradient(175deg, #e7d39f, #cdb173 50%, #a98d52); color:#4a3618; white-space:nowrap;
+           font-family:var(--serif); font-weight:700; font-size:calc(var(--pw) * .032); letter-spacing:.1em;
+           box-shadow:inset 0 0 0 1px #8f7238, inset 0 1px 0 rgba(255,240,200,.6), 0 2px 4px rgba(30,10,2,.5); }
+  .plate i { width:calc(var(--pw) * .018); aspect-ratio:1; border-radius:50%; background:radial-gradient(circle at 35% 35%, #c9ad6e, #6e5428); box-shadow:0 0 0 1px #5a4220; }
+  .pressed { font-family:var(--serif); font-weight:700; font-size:calc(var(--pw) * .032); color:#4a1c06; text-shadow:0 1px 0 rgba(255,214,170,.35), 0 -1px 0 rgba(40,12,2,.5); }
+  .cover .hint { position:absolute; left:27%; bottom:19%; font-size:14px; color:#f1d9b0; opacity:calc(1 - var(--fold, 0) * 3); }
+
+  /* Inside cover: Man Singh Palace tiles as the endpaper, the portrait pasted on it. */
+  .endpaper { background:#1d3d6e url(/book/tiles-768.jpg) center/cover; display:grid; place-items:center; }
+  .photo { background:#fff; padding:12px 12px 40px; transform:rotate(-2.5deg); box-shadow:0 18px 30px -12px rgba(0,0,0,.5); width:72%; }
+  .photo img { width:100%; aspect-ratio:4/5; object-fit:cover; object-position:50% 18%; display:block; background:#000; }
+  .photo span { display:block; text-align:center; font-family:var(--serif); font-size:16px; margin-top:10px; color:var(--ink); }
+
+  h2, .h2 { font-family:var(--serif); font-weight:700; font-size:34px; line-height:1.05; letter-spacing:-.01em; }
+  .ch { font-family:var(--serif); font-size:16px; color:var(--soft); margin-bottom:8px; }
+  .lead { font-family:var(--serif); font-size:19px; line-height:1.45; margin-top:14px; }
+  .txt { font-size:16px; line-height:1.6; color:var(--soft); margin-top:12px; }
+  .toc { margin-top:22px; list-style:none; padding:0; }
+  .toc li { display:flex; align-items:baseline; gap:8px; padding:7px 0; font-size:16px; }
+  .toc li::after { content:""; flex:1; order:1; border-bottom:2px dotted #cfc5b2; margin:0 4px; }
+  .toc li span:last-child { order:2; color:var(--soft); }
+  .toc button { all:unset; cursor:pointer; color:var(--ink); font-weight:500; }
+  .toc button:hover, .toc button:focus-visible { color:var(--blue); text-decoration:underline; }
+
+  .timeline { margin-top:18px; display:grid; grid-template-columns:52px 1fr; gap:10px 14px; font-size:15px; }
+  .timeline b { font-weight:600; } .timeline span { color:var(--soft); display:block; font-size:14px; }
+  .timeline .y { font-family:var(--serif); color:var(--soft); }
+  .timeline .now b { color:var(--blue); }
+  .nums { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px; }
+  .nums b { font-family:var(--serif); font-size:36px; display:block; color:var(--ink); } .nums span { font-size:14px; color:var(--soft); }
+  .stack { margin-top:18px; font-size:15px; line-height:1.7; color:var(--soft); }
+
+  .pasted { margin-top:20px; background:#fff; padding:10px 10px 34px; transform:rotate(1.6deg); box-shadow:0 14px 26px -12px rgba(0,0,0,.35); }
+  .pasted img { width:100%; display:block; }
+  .pasted span { display:block; font-family:var(--serif); font-size:14px; color:var(--soft); margin-top:8px; text-align:center; }
+  .tape { width:90px; height:22px; background:rgba(226,181,60,.6); margin:-8px auto 0; transform:rotate(-3deg); }
+  .facts { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:18px; }
+  .facts b { font-family:var(--serif); font-size:26px; display:block; } .facts span { font-size:13px; color:var(--soft); }
+  .go { margin-top:auto; font-weight:600; }
+  /* A product page: name, taped screenshot, one paragraph, three facts, the link. */
+  .product .pasted { margin-top:12px; padding:8px 8px 26px; } .product .pasted img { aspect-ratio:16 / 10; object-fit:cover; object-position:top; }
+  .product .pasted span { font-size:13px; margin-top:5px; } .product .txt { font-size:15px; line-height:1.5; }
+  .product .facts { margin-top:12px; } .product .facts b { font-size:22px; }
+  .gutter-r.product .pasted { transform:rotate(-1.4deg); }
+  .single .product .page { padding:26px 24px 34px; } .single .product .pasted { padding-bottom:8px; } .single .product .pasted span { display:none; }
+  .single .product .txt { font-size:14px; margin-top:10px; }
+
+  .quote { margin:auto 0; font-family:var(--serif); font-size:32px; line-height:1.15; }
+  .quote + p { font-size:15px; color:var(--soft); }
+
+  .contact { color:#fbecd2; border-radius:14px 4px 4px 14px; }
+  .contact .page { position:relative; padding:calc(var(--ph) * .1) calc(var(--pw) * .13) calc(var(--ph) * .09); }   /* inside the tooled border */
+  .tooling.slim, .single .tooling.wide { display:none; } .single .tooling.slim { display:block; }
+  .contact h2 { color:#f6dfae; text-shadow:0 1px 0 rgba(60,20,4,.5); }
+  .contact form { margin-top:16px; display:grid; gap:10px; }
+  .contact label { font-size:14px; color:#fbe6c2; display:grid; gap:4px; }
+  .contact input, .contact select, .contact textarea { font:inherit; font-size:15px; padding:10px 12px; border-radius:6px; border:1px solid #7a3d1a; background:#fbf2e0; color:#2b1a10; }
+  .contact textarea { min-height:90px; resize:vertical; }
+  .contact .send { margin-top:4px; background:linear-gradient(175deg, #efdcab, #d8c18a 45%, #bea064); color:#4f3a1c; box-shadow:inset 0 0 0 2px #b89a5a; font-weight:700; border:0; padding:12px; border-radius:6px; font-size:16px; cursor:pointer; }
+  .contact small { font-size:13px; color:#f1d9b0; }
+  .hp { position:absolute; left:-9999px; }
+
+  /* ---- Owner's idea: exactly what's on the open pages, enlarged and blurred, behind the book. A copy of the spread is
+     made when a page turn finishes; two layers cross-fade. The copy is still while it shows, so the browser keeps its
+     blurred picture and doesn't redo the blur while you scroll. Closed book (cover / back cover): plain cream. */
+  .glow { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .glow { display:block; }
+  /* The blur sits on the book-sized copy (set in JS), before it's enlarged: the same look, far fewer pixels to blur. */
+  .glow > div { position:absolute; inset:0; opacity:0; visibility:hidden; transition:opacity .7s ease, visibility 0s linear .7s; will-change:opacity; }
+  .glow > div.on { opacity:.85; visibility:visible; transition:opacity .7s ease, visibility 0s; }
+  .glow .spread { position:absolute; left:50%; top:50%; display:flex; transform-origin:center; }
+  .glow .slot { position:relative; width:var(--pw); height:var(--ph); }
+  .glow .slot .face { transform:none; }
+  .running { color:var(--ink); }
+  .tabs button { color:var(--ink); } .tabs button.on { background:rgba(255,255,255,.85); }
+
+  /* Chapter tabs under the book: where you are, and a way to jump. */
+  .tabs { margin-top:16px; display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+  .tabs button { all:unset; cursor:pointer; font-size:14px; color:var(--soft); padding:6px 10px; border-radius:6px; }
+  .tabs button:hover, .tabs button:focus-visible { color:var(--ink); background:rgba(0,0,0,.05); }
+  .tabs button.on { color:var(--ink); background:#fff; font-weight:600; }
+  .single .tabs { display:none; }
+  /* Phone: no flap or button (owner); the cover is the full tooled panel with the brass centred in it. */
+  .single .flap, .single .button { display:none; }
+  .single .brass { left:18%; width:64%; top:50%; bottom:auto; transform:translateY(-50%); }
+  .single .cover .hint { left:0; right:0; text-align:center; opacity:1; }
+
+  /* ---- Around the closed book: sprigs pressed under its edges (behind the book) and a few quiet words beside it. */
+  .decor { position:absolute; inset:0; pointer-events:none; z-index:0; }
+  .deco { position:absolute; opacity:0; transition:opacity .7s ease; }
+  .deco.show { opacity:1; }
+  .sprig { width:150px; height:325px; }
+  .s1 { color:#7a8752; left:calc(50% - var(--pw) / 2 - 118px); top:calc(50% + var(--ph) / 2 - 300px); transform:rotate(-24deg); }
+  .s2 { color:#a77c4c; left:calc(50% + var(--pw) / 2 - 52px); top:calc(50% - var(--ph) / 2 - 70px); transform:rotate(146deg); }
+  .s3 { color:#8d9a64; width:96px; height:208px; left:calc(50% + var(--pw) / 2 - 8px); top:calc(50% + var(--ph) / 2 - 170px); transform:rotate(38deg); }
+  .words { font-family:var(--serif); color:#6b5a44; max-width:300px; line-height:1.3; }
+  .words em { display:block; font-style:italic; font-weight:500; font-size:clamp(26px, 2.6vw, 40px); color:#4a3a28; }
+  .words span { display:block; font-size:17px; margin-top:8px; }
+  .wl { right:calc(50% + var(--pw) / 2 + 80px); top:30%; text-align:right; }
+  .wr { left:calc(50% + var(--pw) / 2 + 80px); bottom:28%; }
+  @media (max-width:1100px) { .words { display:none; } }
+  .single .sprig { width:96px; height:208px; }
+  .single .s1 { left:-30px; top:calc(50% + var(--ph) / 2 - 190px); } .single .s2 { left:auto; right:-34px; top:calc(50% - var(--ph) / 2 - 60px); }
+  .single .s3 { display:none; }
+
+  /* The back cover's signature: a pressed seal and the company line, so the lower half isn't empty. */
+  .sign { margin-top:auto; display:flex; align-items:center; gap:14px; padding-top:16px; }
+  .seal { width:46px; height:46px; border-radius:50%; display:grid; place-items:center; font-family:var(--serif); font-weight:700; font-size:16px; color:#5a2a0e;
+          box-shadow:inset 0 2px 3px rgba(40,12,2,.55), inset 0 -1px 0 rgba(255,214,170,.3), 0 0 0 2px rgba(80,30,8,.35); }
+  .sign p { font-size:14px; line-height:1.45; color:#f6e3c4; } .sign a { color:#fbe6c2; }
+  /* Phone: the back cover is one short page, so the form packs tighter; a very short screen scrolls it (up/down drags aren't swipes). */
+  .single .contact .page { padding:22px 22px 16px; overflow-y:auto; }
+  .single .contact form { margin-top:8px; gap:6px; }
+  .single .contact input, .single .contact select, .single .contact textarea { padding:8px 10px; }
+  .single .contact textarea { min-height:56px; }
+  .single .contact .send { padding:10px; }
+  .single .sign { padding-top:10px; gap:10px; } .single .seal { width:36px; height:36px; font-size:13px; } .single .sign p { font-size:13px; }
+  @media (max-height:620px) { .single .sign { display:none; } }
+
+  /* "Skip to contact": top-right on a laptop; under the ‹ › buttons on a phone; never on the last page. */
+  .skip-phone { display:none; margin-top:10px; font-size:15px; color:var(--ink); }
+  .single .skip { display:none; } .single .skip-phone { display:block; }
+  .at-end .skip, .at-end .skip-phone { display:none; }
+  @media (max-height:760px) { .tabs { display:none; } }
+
+  /* Phones: one page wide; each page turns away to show the next. */
+  .single .book { width:var(--pw); }
+  /* Phone: half-width leaves hinged on the page's middle; each half shows its part of a full-size page copy. */
+  .single .leaf.half { left:50%; width:calc(var(--pw) / 2); pointer-events:none; }
+  .face.cut { background:none; overflow:hidden; }
+  .face.cut > .face { position:absolute; top:0; bottom:0; left:0; width:var(--pw); }
+  .face.cut.front > .face { left:calc(var(--pw) / -2); }
+  .half-base { position:absolute; top:0; bottom:0; left:0; width:calc(var(--pw) / 2); pointer-events:none; }
+  /* Just above the highest leaf (depth 1 + 12 × .4 = 5.8px): any higher and the perspective visibly enlarges it. */
+  .flats { position:absolute; inset:0; transform:translateZ(6px) scale(.997); }   /* .997 = (2000 - 6) / 2000 undoes it */
+  .flats.off { visibility:hidden; }
+  /* The whole-page turn (cover, photo page, back cover): full width, hinged on the left edge, above everything. */
+  .single .leaf.whole { left:0; width:var(--pw); pointer-events:none; }
+  .leaf.whole.off { visibility:hidden; }
+  .face.blank { background:linear-gradient(to left, rgba(70,45,20,.2), transparent 30%), var(--paper); }
+  .flat:not(.on) { display:none; }   /* (the shown page keeps its own display: some faces are grids) */
+  .single .book::after { left:4%; right:4%; }
+  .single .ribbon { right:30px; }
+  .single .stage { touch-action:pan-y; }
+  .single .leaf.anim { transition:transform .45s cubic-bezier(.3,.7,.2,1); }
+  .pager { display:none; margin-top:18px; gap:22px; align-items:center; font-size:15px; color:var(--soft); }
+  .single .pager { display:flex; }
+  .pager button { width:46px; height:46px; border-radius:50%; border:0; background:var(--ink); color:#fff; font-size:22px; cursor:pointer; }
+  .pager button:disabled { opacity:.25; cursor:default; }
+  .swipe-hint { display:none; }
+  .single .swipe-hint { display:inline; }
+  .single .scroll-hint { display:none; }
+
+
+  /* The stage above keeps the prototype's layering. */
+  .stage > .running, .stage > .book, .stage > .tabs, .stage > .pager { position:relative; z-index:1; }
+
+  /* Source faces: hidden once the engine has built the book; otherwise the readable column (no JS / reduced motion). */
+  .engine #faces, body:not(.engine) .track, body:not(.engine) .glow, body:not(.engine) .skip { display:none; }
+  #faces { display:grid; gap:20px; width:min(92vw, 520px); margin:0 auto; padding:30px 0 60px; }
+  #faces > .face { position:relative; inset:auto; min-height:560px; border-radius:8px; }
+  #faces > .cover { min-height:420px; }
+  #faces .page { height:auto; min-height:560px; }
+
+  .closing { margin-top:auto; font-weight:600; color:var(--ink); }
+  .quick { margin-top:auto; padding-top:14px; font-size:15px; color:var(--soft); }
+
+  /* Contact form states and the Turnstile box. */
+  .contact .status.ok { color:#e9f5c9; } .contact .status.err { color:#ffd2c2; }
+  .contact .ts:empty { display:none; }

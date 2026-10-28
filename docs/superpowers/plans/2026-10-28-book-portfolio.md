@@ -25,7 +25,7 @@ e2e runs against the mst-server preview (port 3021).
 - `page.tsx` + metadata + JSON-LD.
 
 ### Task 3: Engine
-- `BookEngine.tsx`: the prototype script in `useEffect`, with cleanup.
+- `engine.js` (the prototype script) started by `BookEngine.tsx` in `useEffect`, with cleanup.
 - Checks:
   - desktop scroll turns;
   - phone swipe, whole and half turns;
@@ -37,8 +37,8 @@ e2e runs against the mst-server preview (port 3021).
 - Compare with the prototype at the same positions.
 
 ### Task 4: Contact form
-- `ContactForm.tsx`: send, sent and error states; Turnstile loaded late; honeypot.
-- Phantom Grace PR (its repo, from `develop`): CORS for mithleshshah.com on `/api/contact`.
+- `wireContact` in `engine.js`: send, sent and error states; Turnstile loaded late; honeypot.
+- Phantom Grace PR (its repo, from `develop`): CORS for mithleshshah.com on `/api/contact`, and a `hiring` topic.
 - Owner step: add `mithleshshah.com` to the Turnstile widget's hostnames.
 
 ### Task 5: Remove the old site

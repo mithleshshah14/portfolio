@@ -12,9 +12,11 @@ The prototype's page-turn engine is imperative DOM code, tuned over two days of 
 Rewriting it as React state would re-open every one of those bugs. So:
 - **Faces = server-rendered JSX** (`src/components/book/Faces.tsx`), so every word is in the HTML for SEO, and the
   reduced-motion column is the same markup.
-- **Engine = one client component** (`src/components/book/BookEngine.tsx`, `'use client'`). It contains the prototype's
-  script almost verbatim, run once in `useEffect` against the rendered faces, with cleanup (listeners, rAF, observers)
-  on unmount. It renders nothing itself.
+- **Engine = the prototype's script almost verbatim** in `src/components/book/engine.js` (plain JS). A tiny client
+  component (`BookEngine.tsx`) starts it once in `useEffect`; every listener and timer is tied to an `AbortController`,
+  so it cleans up on unmount. It renders nothing itself.
+- **Contact form = plain markup + one document-level handler** (`wireContact` in `engine.js`). The engine works on
+  copies of the faces, and React handlers don't survive copying, so a delegated `submit` listener serves every copy.
 - **Styles** = the prototype's CSS moved to `src/app/book.css` (global, imported in `layout.tsx`). Tailwind stays for
   nothing new; it can go in a later cleanup.
 - **Content** = `src/lib/bookData.ts`:
@@ -31,8 +33,8 @@ Rewriting it as React state would re-open every one of those bugs. So:
 | `src/components/book/Book.tsx` | stage, book, slab, deco, tabs, ‹ › buttons, live region; renders `Faces`, mounts `BookEngine` |
 | `src/components/book/Faces.tsx` | the 12 faces from `bookData` |
 | `src/components/book/Tooling.tsx` | the hidden SVG `<defs>` (tooled leather symbols) |
-| `src/components/book/ContactForm.tsx` | back-cover form (client): fields, honeypot, Turnstile, send states |
-| `src/components/book/BookEngine.tsx` | the turn engine (client) |
+| `src/components/book/engine.js` | the turn engine + `wireContact` (form: send states, Turnstile loaded on first focus) |
+| `src/components/book/BookEngine.tsx` | client wrapper: starts both, aborts on unmount |
 | `src/lib/bookData.ts` | content |
 | `public/book/*` | images: leather, tiles, portrait, product screenshots, blur sources, OG cover |
 
@@ -65,7 +67,7 @@ Removed:
 
 ## 6. Reduced motion and no-JS
 - `prefers-reduced-motion: reduce`: the engine doesn't start, and CSS lays the faces out as a column of cards.
-- Without JS, the same column shows (`.no-js` class removed by the engine on start). The site stays readable either way.
+- Without JS, the same column shows (the engine adds `.engine` to `body` on start; until then `#faces` is the column). The site stays readable either way.
 
 ## 7. Hosting and release
 - **Production:** mst-server `/srv/portfolio` (`master`), systemd `portfolio.service` on port 3020, Cloudflare tunnel
