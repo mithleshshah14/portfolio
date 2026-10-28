@@ -274,7 +274,9 @@ export function startBook(signal) {
     const k = Math.max(1 - open, close), end = close > 0.5;
     const ry = ((end ? 9 : -9) + mx * 6) * k, rx = (5 + my * 4) * k;
     book.style.transform = `translateX(${x}px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-    slabStart.classList.toggle("on", k > 0.02 && !end); slabEnd.classList.toggle("on", k > 0.02 && end);
+    // The right-side block (page edges, back board, spine) only while the cover opens: on while the book closes it
+    // showed bare leather and the spine's dark edge under the last turning page (owner, 28 Oct).
+    slabStart.classList.toggle("on", 1 - open > 0.02); slabEnd.classList.toggle("on", k > 0.02 && end);
     book.classList.toggle("open", open > 0.5 && close < 0.5);
     book.classList.toggle("ended", close >= 0.5);
     setFloat(t < 0.1 || close >= 1);
