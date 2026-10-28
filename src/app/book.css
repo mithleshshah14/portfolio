@@ -270,6 +270,8 @@
   #faces > .cover { min-height:420px; }
   #faces .page { height:auto; min-height:560px; }
 
+  /* Phone pages and the column aren't left/right pages: page number bottom right. */
+  .flat .pno, #faces .pno { right:24px; }
   .closing { margin-top:auto; font-weight:600; color:var(--ink); }
   .quick { margin-top:auto; padding-top:14px; font-size:15px; color:var(--soft); }
 
