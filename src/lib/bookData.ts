@@ -58,7 +58,7 @@ export const BRANDS: Brand[] = [
 // Values are the Phantom Grace worker's topic keys (PhantomGrace src/contact.js TOPICS).
 export const CONTACT_TOPICS: [string, string][] = [
   ["partnership", "Working together"],
-  ["hiring", "Hiring"],
+  ["advisor", "Co-founder or advisor"],
   ["training", "Training for your team"],
   ["visahunt", "VisaHunt"],
   ["huntwiseai", "HuntwiseAI"],
