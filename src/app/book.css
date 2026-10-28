@@ -264,7 +264,7 @@
   .stage > .running, .stage > .book, .stage > .tabs, .stage > .pager { position:relative; z-index:1; }
 
   /* Source faces: hidden once the engine has built the book; otherwise the readable column (no JS / reduced motion). */
-  .engine #faces, body:not(.engine) .track, body:not(.engine) .glow, body:not(.engine) .skip { display:none; }
+  .engine #faces, .turning #faces, body:not(.engine) .track, body:not(.engine) .glow, body:not(.engine) .skip { display:none; }
   #faces { display:grid; gap:20px; width:min(92vw, 520px); margin:0 auto; padding:30px 0 60px; }
   #faces > .face { position:relative; inset:auto; min-height:560px; border-radius:8px; }
   #faces > .cover { min-height:420px; }

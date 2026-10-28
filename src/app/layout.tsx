@@ -23,7 +23,12 @@ export const viewport: Viewport = { themeColor: "#f1e8d6" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     // Font variables on <html>: book.css reads them in :root.
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    // The inline script marks the page for the turning book before the first paint, so the readable column (no JS /
+    // reduced motion) doesn't flash on load. It edits <html>'s class, hence suppressHydrationWarning.
+    <html lang="en" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("turning")` }} />
+      </head>
       <body>{children}</body>
     </html>
   );
