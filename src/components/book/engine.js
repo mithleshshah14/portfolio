@@ -16,8 +16,9 @@ export function startBook(signal) {
   function build() {
     single = innerWidth < 760;
     document.body.classList.toggle("single", single);
-    // Page size: as big as the screen allows, book proportions 0.72.
-    const ph = Math.min(innerHeight * 0.8, 680);
+    // Page size: as big as the screen allows, book proportions 0.72. Laptop leaves ~140px for the running head and the
+    // chapter tabs, so short laptop windows keep the tabs on screen (owner).
+    const ph = Math.min(innerHeight * 0.8, 680, single ? 680 : innerHeight - 140);
     pw = Math.min(ph * 0.72, single ? innerWidth * 0.9 : innerWidth * 0.46);
     const h = single ? Math.min(ph, pw / 0.62) : pw / 0.72;
     document.documentElement.style.setProperty("--pw", pw + "px");

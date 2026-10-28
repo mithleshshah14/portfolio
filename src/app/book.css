@@ -229,7 +229,7 @@
   .skip-phone { display:none; margin-top:10px; font-size:15px; color:var(--ink); }
   .single .skip { display:none; } .single .skip-phone { display:block; }
   .at-end .skip, .at-end .skip-phone { display:none; }
-  @media (max-height:760px) { .tabs { display:none; } }
+  @media (max-height:520px) { .tabs { display:none; } }
 
   /* Phones: one page wide; each page turns away to show the next. */
   .single .book { width:var(--pw); }
