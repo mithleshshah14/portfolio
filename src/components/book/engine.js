@@ -301,7 +301,8 @@ export function startBook(signal) {
   on(window, "scroll", () => { if (!single) requestAnimationFrame(update); }, { passive: true });
   let rt; on(window, "resize", () => { clearTimeout(rt); rt = setTimeout(build, 150); });
   // A page whose words don't fit (narrow phone, bigger system text, different fonts) shrinks its content a little at a
-  // time until they do, measured on the visitor's own screen. ponytail: floor 0.7, below that it overflows.
+  // time until they do, measured on the visitor's own screen. ponytail: floor 0.64 (the 320x480 contents page needs
+  // ~0.66), below that it overflows.
   // Fits = the lowest piece of content (the page number is pinned, so it doesn't count) ends above the bottom padding.
   const overflows = (pg) => {
     const end = Math.max(...[...pg.children].filter((c) => getComputedStyle(c).position !== "absolute").map((c) => c.offsetTop + c.offsetHeight));
@@ -310,7 +311,7 @@ export function startBook(signal) {
   function fitPage(pg) {
     if (!pg || !pg.offsetParent) return;                  // hidden pages measure as 0 high: fit them when shown
     pg.style.transform = pg.style.width = pg.style.height = "";
-    for (let s = 1; overflows(pg) && s > 0.7; ) {
+    for (let s = 1; overflows(pg) && s > 0.64; ) {
       s -= 0.04;
       pg.style.transformOrigin = "0 0"; pg.style.transform = `scale(${s})`; pg.style.width = pg.style.height = `${100 / s}%`;
     }
