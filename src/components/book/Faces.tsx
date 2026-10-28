@@ -104,7 +104,7 @@ export function Faces() {
           <ul className="ways">
             <li><b>Build</b><span>a backend system or a new product together</span></li>
             <li><b>Train</b><span>your engineering team on backend systems</span></li>
-            <li><b>Advise</b><span>your startup, or join it as a co-founder</span></li>
+            <li><b>Advise</b><span>your startup, or join it as a co‑founder</span></li>
             <li><b>Partner</b><span>with one of my brands</span></li>
           </ul>
           <Social className="reach" />
