@@ -279,6 +279,7 @@ export function startBook(signal) {
     slabStart.classList.toggle("on", 1 - open > 0.02); slabEnd.classList.toggle("on", k > 0.02 && end);
     book.classList.toggle("open", open > 0.5 && close < 0.5);
     book.classList.toggle("ended", close >= 0.5);
+    book.classList.toggle("closing", close > 0);   // the ribbon hangs from the right page, which is gone by now
     setFloat(t < 0.1 || close >= 1);
     // Running head: the chapter on show. The decorations follow the left page of an open spread (the right one at the ends).
     const shown = Math.min(done * 2, faces.length - 1);
