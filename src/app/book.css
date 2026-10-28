@@ -281,8 +281,8 @@
   .single .photo { width:56%; padding:9px 9px 30px; } .single .photo span { font-size:14px; margin-top:7px; }
   .closing { margin-top:auto; font-weight:600; color:var(--ink); }
   /* "The end": reach me right here (adviser: don't make people turn to the back cover first). */
-  .reach { margin-top:22px; display:grid; gap:8px; font-family:var(--serif); font-size:18px; overflow-wrap:anywhere; }
-  .single .reach { font-size:15px; margin-top:16px; }
+  .reach { margin-top:22px; display:grid; gap:8px; font-family:var(--serif); font-size:18px; }
+  .single .reach { font-size:16px; margin-top:16px; }
   .nums { grid-template-columns:repeat(3, 1fr); }   /* three stats */
   .quick { margin-top:auto; padding-top:14px; font-size:15px; color:var(--soft); }
 

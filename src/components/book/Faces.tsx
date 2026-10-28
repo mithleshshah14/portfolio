@@ -103,7 +103,8 @@ export function Faces() {
           <h2>The end of this chapter.</h2>
           <p className="txt">Not of the story. If you&apos;re building something, hiring, or want to work with one of my brands, I&apos;d like to hear from you.</p>
           <p className="reach">
-            <a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
+            {/* A narrow phone breaks it after the @, never inside a word. */}
+            <a href={`mailto:${LINKS.email}`}>{LINKS.email.split("@")[0]}@<wbr />{LINKS.email.split("@")[1]}</a>
             <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn →</a>
           </p>
           <p className="txt closing">Keep scrolling and the book closes. Write to me on the back cover.</p>
