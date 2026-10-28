@@ -22,6 +22,9 @@ export function Book() {
             <svg className="deco sprig s1" data-on="cover contact"><use href="#sprig" /></svg>
             <svg className="deco sprig s2" data-on="cover contact"><use href="#sprig" /></svg>
             <svg className="deco sprig s3" data-on="cover contact"><use href="#sprig" /></svg>
+            <svg className="deco sprig s4" data-on="cover contact"><use href="#sprig" /></svg>
+            <svg className="deco fallen l1" data-on="cover contact"><use href="#leaf" /></svg>
+            <svg className="deco fallen l2" data-on="cover contact"><use href="#leaf" /></svg>
             <div className="deco words wl" data-on="cover"><em>A founder&apos;s journal</em><span>2018 → 2026</span></div>
             <div className="deco words wr" data-on="cover"><em>Gwalior,</em><span>Madhya Pradesh, India</span></div>
             <div className="deco words wl" data-on="contact"><em>Thanks for reading.</em><span>The next chapter is still being written.</span></div>

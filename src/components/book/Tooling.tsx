@@ -14,6 +14,11 @@ export function Tooling() {
           <path d="M90 24 c -10 -4 -16 -12 -16 -22 c 10 2 15 10 16 22z"/>
         </g>
       </symbol>
+      {/* A single fallen leaf: blade, a lighter midrib, a short stalk. */}
+      <symbol id="leaf" viewBox="0 0 40 72">
+        <path d="M20 4 C 4 18, 3 44, 20 60 C 37 44, 36 18, 20 4z" fill="currentColor"/>
+        <path d="M20 8 C 21 26, 21 44, 20 60 L 20 70" fill="none" stroke="rgba(255,248,230,.45)" strokeWidth="1.6" strokeLinecap="round"/>
+      </symbol>
       {/* Tooled leather (owner's reference photo): vine border band, a rule, corner scrolls, side fleurons, a plain cartouche.
            Drawn twice by .tooling: a light edge offset down-right, then the dark groove, so it reads as pressed into the leather. */}
       <pattern id="vine-lo" width="40" height="40" patternUnits="userSpaceOnUse" x="22" y="22"><path d="M0 20 C10 5 20 5 20 20 S30 35 40 20 M9 13 c-5 -7 4 -12 7 -5 M31 27 c5 7 -4 12 -7 5 M20 20 c-3 -4 -1 -8 3 -8 M20 20 c3 4 1 8 -3 8" fill="none" stroke="rgba(48,15,3,.78)" strokeWidth="2.4" strokeLinecap="round"/></pattern>
