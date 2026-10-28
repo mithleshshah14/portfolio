@@ -167,7 +167,7 @@ export function startBook(signal) {
     leaves.forEach((leaf, j) => {
       // Only the leaves a turn can show (two each side of `state`). The rest of the stack hid under them, but every 3D
       // layer's soft edge let the pages below bleed through as a light line down the page's middle (owner).
-      leaf.style.visibility = (j >= state - 2 && j <= state + 1) || j === dragLeaf ? "" : "hidden";
+      leaf.style.visibility = (j >= state - 2 && j <= state) || j === dragLeaf || j === dragLeaf + 1 ? "" : "hidden";
       const angle = j === dragLeaf ? dragAngle : j < state ? -180 : 0;
       leaf.classList.toggle("anim", animate);
       leaf.style.transform = `translateZ(${depth(j, angle < -90)}px) rotateY(${angle}deg)`;
