@@ -55,8 +55,8 @@
   .leaf .front { border-radius:0 6px 6px 0; }
   .leaf .back  { border-radius:6px 0 0 6px; }
   .page { padding:38px 36px 46px; height:100%; display:flex; flex-direction:column; }
-  .pno { position:absolute; bottom:16px; font-size:13px; color:var(--soft); }
-  .front .pno { right:24px; } .back .pno { left:24px; }
+  .pno { position:absolute; bottom:16px; right:24px; font-size:13px; color:var(--soft); }
+  .back:not(.cut) > .page > .pno { left:24px; right:auto; }
   .gutter-r { box-shadow:inset 18px 0 22px -18px rgba(60,45,30,.35); } /* spine side of a right page */
   .gutter-l { box-shadow:inset -18px 0 22px -18px rgba(60,45,30,.35); }
 
@@ -270,8 +270,8 @@
   #faces > .cover { min-height:420px; }
   #faces .page { height:auto; min-height:560px; }
 
-  /* Phone pages and the column aren't left/right pages: page number bottom right. */
-  .flat .pno, #faces .pno { right:24px; }
+  /* Phone: a smaller portrait (owner). */
+  .single .photo { width:56%; padding:9px 9px 30px; } .single .photo span { font-size:14px; margin-top:7px; }
   .closing { margin-top:auto; font-weight:600; color:var(--ink); }
   .quick { margin-top:auto; padding-top:14px; font-size:15px; color:var(--soft); }
 
