@@ -270,7 +270,7 @@
   #faces > .cover { min-height:420px; }
   #faces .page { height:auto; min-height:560px; }
 
-  .book.closing .ribbon { opacity:0; }
+  .book.is-closing .ribbon { opacity:0; }
   /* More around the closed book (owner): a sprig tucked under the top-left, two loose leaves further out. */
   .s4 { color:#93a06a; width:96px; height:208px; left:calc(50% - var(--pw) / 2 - 64px); top:calc(50% - var(--ph) / 2 - 36px); transform:rotate(-38deg); }
   .fallen { width:30px; height:54px; }   /* not .leaf: that is the book's page */
@@ -287,6 +287,8 @@
   /* Phone: a smaller portrait (owner). */
   .single .photo { width:56%; padding:9px 9px 30px; } .single .photo span { font-size:14px; margin-top:7px; }
   .closing { margin-top:auto; font-weight:600; color:var(--ink); }
+  /* Pages 9 | 10: the two bottom lines share size and spacing, so they sit on the same lines (owner). */
+  .quote + p, .txt.closing { font-size:15px; line-height:1.6; }
   /* "The end": reach me right here (adviser: don't make people turn to the back cover first). */
   /* "The end": reasons to write, set like the contents list (owner: the page was too empty). */
   .ways { list-style:none; padding:0; margin-top:14px; }
