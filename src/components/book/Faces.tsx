@@ -1,6 +1,7 @@
 // The 12 faces of the book, in reading order (server-rendered: every word is in the HTML). The engine clones them into
 // leaves; without it they show as a column. data-title = the running head.
 import { BRANDS, CONTACT_TOPICS, LINKS, TIMELINE } from "@/lib/bookData";
+import { Social } from "./Social";
 
 const pno = (n: number) => <span className="pno">{n}</span>;
 
@@ -39,9 +40,7 @@ export function Faces() {
             <li><button data-goto="9">6 · The path</button><span>9</span></li>
             <li><button data-goto="11">Write to me</button><span>12</span></li>
           </ul>
-          <p className="quick">
-            <a href={`mailto:${LINKS.email}`}>Email</a> · <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn</a> · <a href={LINKS.github} target="_blank" rel="noopener">GitHub</a>
-          </p>
+          <Social className="quick" />
           {pno(2)}
         </div>
       </section>
@@ -102,11 +101,7 @@ export function Faces() {
         <div className="page">
           <h2>The end of this chapter.</h2>
           <p className="txt">Not of the story. If you&apos;re building something, hiring, looking for a backend trainer for your team, or want to work with one of my brands, I&apos;d like to hear from you.</p>
-          <p className="reach">
-            {/* A narrow phone breaks it after the @, never inside a word. */}
-            <a href={`mailto:${LINKS.email}`}>{LINKS.email.split("@")[0]}@<wbr />{LINKS.email.split("@")[1]}</a>
-            <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn →</a>
-          </p>
+          <Social className="reach" />
           <p className="txt closing">Keep scrolling and the book closes. Write to me on the back cover.</p>
           {pno(10)}
         </div>
