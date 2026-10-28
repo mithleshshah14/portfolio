@@ -191,6 +191,9 @@ export function startBook(signal) {
     // The real page goes away while anything moves and comes back once the turn has landed (.45 s).
     clearTimeout(flatTimer);
     if (backWhole) { /* leave the real page showing; the whole page swings in above it */ }
+    // Lifting a whole page forward: the next page (halves) must show under it. The real page on top hid it, so the
+    // page seemed stuck until release, then jumped (owner: "the last page swipe is not smooth").
+    else if (wholeDrag) flatsEl.classList.add("off");
     else if (flatIdx === -1) showFlat(idx);
     else if (idx !== flatIdx) { flatsEl.classList.add("off"); flatTimer = later(() => showFlat(idx), 460); }
     else flatsEl.classList.remove("off");
