@@ -64,8 +64,7 @@ export function Faces() {
           <h2>What eight years taught me</h2>
           <p className="txt">Large systems stay up when they&apos;re boring: clear contracts, queues that absorb spikes, and nothing clever that someone has to decode at 3am. I build my products the same way.</p>
           <div className="nums">
-            <div><b>8</b><span>years engineering</span></div><div><b>6</b><span>companies</span></div>
-            <div><b>4</b><span>live brands</span></div><div><b>2</b><span>built solo</span></div>
+            <div><b>8</b><span>years engineering</span></div><div><b>6</b><span>companies</span></div><div><b>4</b><span>brands</span></div>
           </div>
           <p className="stack">Java · Spring Boot · Kafka · Redis · PostgreSQL · AWS · Kubernetes · Next.js</p>
           {pno(4)}
@@ -102,7 +101,11 @@ export function Faces() {
       <section className="face gutter-r" data-title="The end">
         <div className="page">
           <h2>The end of this chapter.</h2>
-          <p className="txt">Not of the story. If you&apos;re building something, hiring, or want one of the brands to work with you, I&apos;d like to hear from you.</p>
+          <p className="txt">Not of the story. If you&apos;re building something, hiring, or want to work with one of my brands, I&apos;d like to hear from you.</p>
+          <p className="reach">
+            <a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
+            <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn →</a>
+          </p>
           <p className="txt closing">Keep scrolling and the book closes. Write to me on the back cover.</p>
           {pno(10)}
         </div>
