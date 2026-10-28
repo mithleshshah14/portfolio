@@ -272,8 +272,10 @@
 
   .book.closing .ribbon { opacity:0; }
   /* Phone half-pictures overlap 1px at the page's middle: their anti-aliased edges left a hairline there (owner). */
-  .face.cut.back { right:-1px; }
-  .face.cut.front { left:-1px; } .face.cut.front > .face { left:calc(var(--pw) / -2 + 1px); }
+  /* 1px wider on both sides (the back half is flipped twice in 3D, so "its right" isn't simply the spine side); the
+     content shifts 1px to stay in register. */
+  .face.cut.back, .face.cut.front { left:-1px; right:-1px; }
+  .face.cut.back > .face { left:1px; } .face.cut.front > .face { left:calc(var(--pw) / -2 + 1px); }
   .half-base { width:calc(var(--pw) / 2 + 1px); }
   /* Phone: a smaller portrait (owner). */
   .single .photo { width:56%; padding:9px 9px 30px; } .single .photo span { font-size:14px; margin-top:7px; }
