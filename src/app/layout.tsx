@@ -22,8 +22,9 @@ export const viewport: Viewport = { themeColor: "#f1e8d6" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${fraunces.variable} ${inter.variable}`}>{children}</body>
+    // Font variables on <html>: book.css reads them in :root.
+    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }
