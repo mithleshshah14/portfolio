@@ -100,7 +100,13 @@ export function Faces() {
       <section className="face gutter-r" data-title="The end">
         <div className="page">
           <h2>The end of this chapter.</h2>
-          <p className="txt">Not of the story. If you&apos;re building something, hiring, looking for a backend trainer for your team, or want to work with one of my brands, I&apos;d like to hear from you.</p>
+          <p className="txt">Not of the story. I&apos;d like to hear from you if you want to:</p>
+          <ul className="ways">
+            <li><b>Build</b><span>a backend system or a new product together</span></li>
+            <li><b>Train</b><span>your engineering team on backend systems</span></li>
+            <li><b>Hire</b><span>me for a backend or architecture role</span></li>
+            <li><b>Partner</b><span>with one of my brands</span></li>
+          </ul>
           <Social className="reach" />
           <p className="txt closing">Keep scrolling and the book closes. Write to me on the back cover.</p>
           {pno(10)}

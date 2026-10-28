@@ -281,6 +281,13 @@
   .single .photo { width:56%; padding:9px 9px 30px; } .single .photo span { font-size:14px; margin-top:7px; }
   .closing { margin-top:auto; font-weight:600; color:var(--ink); }
   /* "The end": reach me right here (adviser: don't make people turn to the back cover first). */
+  /* "The end": reasons to write, set like the contents list (owner: the page was too empty). */
+  .ways { list-style:none; padding:0; margin-top:14px; }
+  .ways li { display:grid; grid-template-columns:76px 1fr; gap:10px; align-items:baseline; padding:9px 0; border-bottom:2px dotted #cfc5b2; }
+  .ways li:last-child { border-bottom:0; }
+  .ways b { font-family:var(--serif); font-size:20px; }
+  .ways span { font-size:15px; line-height:1.4; color:var(--soft); }
+  .single .ways li { grid-template-columns:64px 1fr; padding:6px 0; } .single .ways b { font-size:17px; } .single .ways span { font-size:14px; }
   .reach { margin-top:24px; }
   .single .reach { margin-top:16px; }
   /* Round icon links (email, LinkedIn, GitHub): paper discs with a pressed rim, ink icons, blue on hover. */
