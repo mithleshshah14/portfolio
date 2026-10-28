@@ -59,6 +59,7 @@ export const BRANDS: Brand[] = [
 export const CONTACT_TOPICS: [string, string][] = [
   ["partnership", "Working together"],
   ["hiring", "Hiring"],
+  ["training", "Training for your team"],
   ["visahunt", "VisaHunt"],
   ["huntwiseai", "HuntwiseAI"],
   ["ashviora", "Ashviora"],

@@ -62,7 +62,7 @@ export function Faces() {
       <section className="face gutter-r" data-title="Chapter 1 · The engineer">
         <div className="page">
           <h2>What eight years taught me</h2>
-          <p className="txt">Large systems stay up when they&apos;re boring: clear contracts, queues that absorb spikes, and nothing clever that someone has to decode at 3am. I build my products the same way.</p>
+          <p className="txt">Large systems stay up when they&apos;re boring: clear contracts, queues that absorb spikes, and nothing clever that someone has to decode at 3am. I build my products the same way, and I train engineering teams to build theirs like that too.</p>
           <div className="nums">
             <div><b>8</b><span>years engineering</span></div><div><b>6</b><span>companies</span></div><div><b>4</b><span>brands</span></div>
           </div>
@@ -101,7 +101,7 @@ export function Faces() {
       <section className="face gutter-r" data-title="The end">
         <div className="page">
           <h2>The end of this chapter.</h2>
-          <p className="txt">Not of the story. If you&apos;re building something, hiring, or want to work with one of my brands, I&apos;d like to hear from you.</p>
+          <p className="txt">Not of the story. If you&apos;re building something, hiring, looking for a backend trainer for your team, or want to work with one of my brands, I&apos;d like to hear from you.</p>
           <p className="reach">
             {/* A narrow phone breaks it after the @, never inside a word. */}
             <a href={`mailto:${LINKS.email}`}>{LINKS.email.split("@")[0]}@<wbr />{LINKS.email.split("@")[1]}</a>

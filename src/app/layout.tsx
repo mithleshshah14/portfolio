@@ -7,7 +7,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["40
 
 const title = "Mithlesh Shah · Founder, Phantom Grace Technologies";
 const description =
-  "Founder of Phantom Grace Technologies (Gwalior): VisaHunt, HuntwiseAI, Ashviora and Silent Arc Studios, after eight years of backend engineering. A founder's journal.";
+  "Founder of Phantom Grace Technologies (Gwalior): VisaHunt, HuntwiseAI, Ashviora and Silent Arc Studios, after eight years of backend engineering. Backend training for engineering teams.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mithleshshah.com"),
