@@ -275,7 +275,7 @@
   .s4 { color:#93a06a; width:96px; height:208px; left:calc(50% - var(--pw) / 2 - 64px); top:calc(50% - var(--ph) / 2 - 36px); transform:rotate(-38deg); }
   .fallen { width:30px; height:54px; }   /* not .leaf: that is the book's page */
   .l1 { color:#b58654; left:calc(50% + var(--pw) / 2 + 74px); top:calc(50% + var(--ph) / 2 - 36px); transform:rotate(28deg); }
-  .l2 { color:#8a9a5e; left:calc(50% - var(--pw) / 2 - 150px); top:calc(50% - var(--ph) / 2 + 120px); transform:rotate(-52deg); }
+  .l2 { color:#8a9a5e; left:calc(50% - var(--pw) / 2 - 58px); top:calc(50% + 6px); transform:rotate(-52deg); }
   .single .s4 { left:-18px; top:calc(50% - var(--ph) / 2 - 30px); width:80px; height:172px; }
   .single .fallen { display:none; }
   /* Phone half-pictures overlap 1px at the page's middle: their anti-aliased edges left a hairline there (owner). */
