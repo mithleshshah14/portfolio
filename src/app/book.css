@@ -116,7 +116,7 @@
   /* Inside cover: Man Singh Palace tiles as the endpaper, the portrait pasted on it. */
   .endpaper { background:#1d3d6e url(/book/tiles-768.jpg) center/cover; display:grid; place-items:center; }
   .photo { background:#fff; padding:12px 12px 40px; transform:rotate(-2.5deg); box-shadow:0 18px 30px -12px rgba(0,0,0,.5); width:72%; }
-  .photo img { width:100%; aspect-ratio:4/5; object-fit:cover; object-position:50% 18%; display:block; background:#000; }
+  .photo img { width:100%; height:auto; aspect-ratio:4/5; object-fit:cover; object-position:50% 18%; display:block; background:#000; }
   .photo span { display:block; text-align:center; font-family:var(--serif); font-size:16px; margin-top:10px; color:var(--ink); }
 
   h2, .h2 { font-family:var(--serif); font-weight:700; font-size:34px; line-height:1.05; letter-spacing:-.01em; }
